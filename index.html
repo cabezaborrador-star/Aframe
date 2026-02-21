@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+</head>
+<body style="margin:0; overflow:hidden;">
+
+<a-scene embedded>
+
+  <!-- Cámara -->
+  <a-entity id="rig" position="0 1.6 4">
+    <a-camera></a-camera>
+  </a-entity>
+
+  <!-- Luces -->
+  <a-light type="ambient" intensity="0.8"></a-light>
+  <a-light type="directional" position="0 5 5"></a-light>
+
+  <!-- Piso -->
+  <a-plane rotation="-90 0 0" width="30" height="30" color="#111"></a-plane>
+
+  <!-- Monstruo -->
+  <a-sphere id="monster"
+            position="0 1 -5"
+            radius="1"
+            color="green">
+  </a-sphere>
+
+  <!-- Barra vida monstruo -->
+  <a-box id="monsterLife"
+         position="0 3 -5"
+         height="0.3"
+         depth="0.2"
+         width="4"
+         color="red">
+  </a-box>
+
+  <!-- Barra vida jugador -->
+  <a-box id="playerLife"
+         position="-3 3 -5"
+         height="0.3"
+         depth="0.2"
+         width="4"
+         color="blue">
+  </a-box>
+
+  <a-sky color="#000014"></a-sky>
+
+</a-scene>
+
+<script>
+
+let monster = document.querySelector("#monster");
+let monsterLifeBar = document.querySelector("#monsterLife");
+let playerLifeBar = document.querySelector("#playerLife");
+let rig = document.querySelector("#rig");
+
+let monsterLife = 25;
+let playerLife = 20;
+
+// 👊 Golpear tocando pantalla
+monster.addEventListener("click", function() {
+
+  monsterLife--;
+
+  monster.setAttribute("animation", {
+    property: "scale",
+    to: "1.5 1.5 1.5",
+    dur: 100,
+    dir: "alternate",
+    loop: 1
+  });
+
+  monsterLifeBar.setAttribute("width", monsterLife * 0.15);
+
+  if (monsterLife <= 0) {
+    monster.setAttribute("visible", "false");
+    alert("🔥 ¡GANASTE EL COMBATE!");
+  }
+});
+
+// 💥 Monstruo ataca cada 2 segundos
+setInterval(() => {
+
+  if (monsterLife > 0 && playerLife > 0) {
+
+    playerLife--;
+
+    monster.setAttribute("animation", {
+      property: "position",
+      to: "0 1 -4",
+      dur: 200,
+      dir: "alternate",
+      loop: 1
+    });
+
+    playerLifeBar.setAttribute("width", playerLife * 0.2);
+
+    if (playerLife <= 0) {
+      alert("💀 PERDISTE... Intenta otra vez.");
+    }
+
+  }
+
+}, 2000);
+
+// 🏃 Movimiento lateral con dedo
+let startX = 0;
+
+document.addEventListener("touchstart", e => {
+  startX = e.touches[0].clientX;
+});
+
+document.addEventListener("touchmove", e => {
+
+  let moveX = e.touches[0].clientX;
+  let diff = (moveX - startX) / 200;
+
+  let pos = rig.getAttribute("position");
+  pos.x = diff * 5;
+
+  rig.setAttribute("position", pos);
+
+});
+
+</script>
+
+</body>
+</html>
