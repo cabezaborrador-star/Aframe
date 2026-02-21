@@ -6,9 +6,8 @@
 <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
 </head>
 
-<body style="margin:0; overflow:hidden; background:pink;">
+<body style="margin:0; overflow:hidden;">
 
-<!-- BOTÓN MOVER -->
 <button id="moveBtn"
 style="
 position:fixed;
@@ -25,17 +24,18 @@ z-index:999;">
 CAMINAR
 </button>
 
-<a-scene embedded fog="type: exponential; color: #BFDFFF; density: 0.02">
+<a-scene>
+
+  <!-- CIELO -->
+  <a-sky color="#87CEEB"></a-sky>
 
   <!-- Cámara -->
   <a-entity id="rig" position="0 1.6 0">
-    <a-camera
-      look-controls="touchEnabled: true">
-    </a-camera>
+    <a-camera look-controls="touchEnabled: true"></a-camera>
   </a-entity>
 
   <!-- Luces -->
-  <a-light type="ambient" intensity="0.7"></a-light>
+  <a-light type="ambient" intensity="0.8"></a-light>
   <a-light type="directional" position="5 10 5"></a-light>
 
   <!-- Piso -->
@@ -45,14 +45,13 @@ CAMINAR
            color="#2E8B57">
   </a-plane>
 
-  <!-- Árboles generados automáticamente -->
+  <!-- Bosque -->
   <a-entity id="forest"></a-entity>
 
 </a-scene>
 
 <script>
 
-// Generar bosque automático
 let forest = document.querySelector("#forest");
 
 for (let i = 0; i < 80; i++) {
@@ -79,7 +78,6 @@ for (let i = 0; i < 80; i++) {
   forest.appendChild(tree);
 }
 
-// Movimiento hacia adelante
 let moving = false;
 let rig = document.querySelector("#rig");
 
@@ -94,12 +92,10 @@ document.getElementById("moveBtn").addEventListener("touchend", () => {
 function moveForward() {
   if (moving) {
     let pos = rig.getAttribute("position");
-    let rotation = rig.getAttribute("rotation");
+    let rotation = rig.object3D.rotation.y;
 
-    let rad = rotation.y * Math.PI / 180;
-
-    pos.x -= Math.sin(rad) * 0.1;
-    pos.z -= Math.cos(rad) * 0.1;
+    pos.x -= Math.sin(rotation) * 0.1;
+    pos.z -= Math.cos(rotation) * 0.1;
 
     rig.setAttribute("position", pos);
   }
